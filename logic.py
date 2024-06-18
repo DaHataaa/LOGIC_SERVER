@@ -330,6 +330,7 @@ class menu():
 						elif menu_text[i].split()[0] == 'Update':
 							os.remove('logic.py')
 							download_git(code_url,'logic.py')
+							time.sleep(1)
 							1/0
 						mouse_touching_l = False
 				else:
