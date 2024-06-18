@@ -84,7 +84,7 @@ delayy = 1
 physics_fps = 60
 time_ratio = round(physics_fps / current_fps,4)
 
-ver = '1.0.0'
+ver = '1.0.1'
 
 #состояния клавиш
 k_ctrl = False
