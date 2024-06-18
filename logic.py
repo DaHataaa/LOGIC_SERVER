@@ -1,4 +1,4 @@
-ver = '1.0.02'
+ver = '1.0.03'
 import pygame
 import time
 import os
