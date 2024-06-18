@@ -1,10 +1,12 @@
-ver = '1.0.2'
+ver = '1.0.1'
 import pygame
 import time
 import os
 import files_module as f_m
 import requests
 import threading
+import urllib.request
+
 
 
 def start_timer():
@@ -85,6 +87,9 @@ delayy = 1
 physics_fps = 60
 time_ratio = round(physics_fps / current_fps,4)
 
+
+ver_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/version'
+code_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/logic.py'
 
 #состояния клавиш
 k_ctrl = False
@@ -252,6 +257,10 @@ class online_maps():
 			print(map_text[i])
 
 
+def download_git(url,name):
+	urllib.request.urlretrieve(url,name)
+
+
 
 class menu():
 	def main():
@@ -276,6 +285,11 @@ class menu():
 		get_names_thr = threading.Thread(target=online_maps.get_names)
 		get_names_thr.start()
 
+		os.remove('actual_ver.txt')
+		download_git(ver_url,'actual_ver.txt')
+
+		actual_ver = open('actual_ver.txt','r').readlines()[0].replace('\n','')
+
 		def menu_interface_and_events():
 
 			global field
@@ -289,14 +303,18 @@ class menu():
 			global linee
 
 			line(0,0,xx,0,cl_black,2)
-			textout(xx//2-50*screen_k,7,int(30*screen_k),cl_black,'LOGIC')
+			textout(xx//2-50*screen_k,7,int(30*screen_k),cl_black,'LOGIC '+ver)
 			line(0,50*screen_k,xx,50*screen_k,cl_black,2)
+
+
 
 
 			textout(xx//4*3+10*screen_k,62*screen_k,int(20*screen_k),cl_black,'Local maps:')
 			textout(xx//4*3+10*screen_k,yy//2+35*screen_k,int(20*screen_k),cl_black,'Online maps:')
 			textout(xx//4*3+10*screen_k,yy//2+10*screen_k,int(10*screen_k),cl_black,'LMC-Choose map | RMC-Delete map')
-			menu_text = ['Start empty','Continue','Quit']
+			menu_text = ['Start empty','Continue','Quit','','','','','','','','','']
+			if actual_ver != ver:
+				menu_text[11] = ('Update to '+actual_ver)
 			for i in range(len(menu_text)):
 				if mouse_x >= 10*screen_k and mouse_x < len(menu_text[i])*14*screen_k and mouse_y >= 62*screen_k+i*34*screen_k and mouse_y < 60*screen_k+i*34*screen_k+34*screen_k:
 					textout(10*screen_k,62*screen_k+i*34*screen_k,int(20*screen_k),cl_red,menu_text[i])
@@ -309,6 +327,10 @@ class menu():
 							menu_running = False
 						elif menu_text[i] == 'Continue':
 							menu_running = False
+						elif menu_text[i].split()[0] == 'Update':
+							os.remove('logic.py')
+							download_git(code_url,'logic.py')
+							1/0
 						mouse_touching_l = False
 				else:
 					textout(10*screen_k,62*screen_k+i*34*screen_k,int(20*screen_k),cl_black,menu_text[i])
