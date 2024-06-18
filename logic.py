@@ -331,6 +331,7 @@ class menu():
 							os.remove('logic.py')
 							download_git(code_url,'logic.py')
 							time.sleep(1)
+							os.run('logic.py')
 							1/0
 						mouse_touching_l = False
 				else:
