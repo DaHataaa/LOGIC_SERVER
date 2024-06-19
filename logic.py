@@ -1,11 +1,13 @@
-ver = '1.0.2'
+ver = '1.0.3'
 import pygame
 import time
 import os
 import files_module as f_m
-import requests
 import threading
 import urllib
+import requests
+
+
 
 def start_timer():
 	global start_time
@@ -102,9 +104,10 @@ k_e = False
 k_v = False
 k_x = False
 k_d = False
-k_h = False
 mouse_touching_l = False
 mouse_touching_r = False
+
+help_i = 0
 
 selecting_step = 0
 
@@ -121,12 +124,12 @@ sq_size = 20
 help_text = ['w,a,s,d - Block directions',
 			 '1-8 - Block chosing',
 			 'LMB - Place block',
-			 'RMB - Navigation',
+			 'RMB (hold) - Navigation',
 			 'Mouse Wheel - Scale',
 			 'R - Remove block',
 			 'Space - Play/Pause',
-			 'ESC - menu',
-			 'E - Select and copy area to clipboard',
+			 'ESC - Menu',
+			 'E (hold) - Select and copy area to clipboard',
 			 'Ctrl+V - Paste area from clipboard',
 			 'Ctrl+X - Cut selected area',
 			 'Ctrl+D - Clear clipboard (Deselect)',
@@ -233,28 +236,7 @@ def clear_field():
 
 
 
-class online_maps():
-	global maps_link
-	global names_online
 
-	maps_link = 'https://docs.google.com/document/d/1wiiccRBexr-W51tt0p79T8n7SaZbSyqEkTyiRFi0Zxs/edit?usp=sharing'
-	def get_names():
-		global names_online
-		global doc
-
-		names_online = []
-
-		doc = requests.get(maps_link).text.split('|')
-		
-		online_maps_count = int(doc[doc.index('maps_count')+1])
-
-		for i in range(online_maps_count):
-			names_online.append(doc[doc.index('map'+str(i))+1])
-
-	def load_online_map(map_name):
-		map_text = doc[doc.index(map_name)+1].split()
-		for i in range(len(map_text)):
-			print(map_text[i])
 
 
 def download_git(url,name):
@@ -292,17 +274,7 @@ class menu():
 			download_git(ver_url,'actual_ver.txt')
 			actual_ver = open('actual_ver.txt','r').readlines()[0].replace('\n','')
 
-			get_names_thr = threading.Thread(target=online_maps.get_names)
-			get_names_thr.start()
-		else:
-			names_online = ['Offline mode']
-
-			
-
-
 		names = get_maps_names()
-
-		
 
 		def menu_interface_and_events():
 
@@ -375,21 +347,11 @@ class menu():
 
 
 
-			if len(names_online) == 0:
-				textout(xx//4*3+10*screen_k,yy//2+74*screen_k,int(12*screen_k),cl_black,'Loading...')
-			for i in range(len(names_online)):
+			for i in range(1):
 				if mouse_x >= xx//4*3+10*screen_k and mouse_x < xx and mouse_y >= yy//2+74*screen_k+i*20*screen_k and mouse_y < yy//2+74*screen_k+i*20*screen_k+20*screen_k:
 					textout(xx//4*3+10*screen_k,yy//2+74*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Not available yet!')
-					if mouse_touching_l and 0:
-						rect(xx//4*3+10*screen_k,yy//2+74*screen_k,xx//4,yy//3*2,cl_white,0)
-						textout(xx//4*3+10*screen_k,yy//2+74*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Loading...')
-						pygame.display.flip()
-						clear_field()
-						field,field_l = online_maps.load_online_map(names_online[i])
-						menu_running = False
-						linee = names_online[i]
 				else:
-					textout(xx//4*3+10*screen_k,yy//2+74*screen_k+i*20*screen_k,int(12*screen_k),cl_black,names_online[i])
+					textout(xx//4*3+10*screen_k,yy//2+74*screen_k+i*20*screen_k,int(12*screen_k),cl_black,'Coming soon...')
 
 
 		
@@ -523,11 +485,11 @@ def main_func():
 
 
 
-	if k_h:
-		rect(xx//2-160*screen_k,yy//2-140*screen_k,320*screen_k,280*screen_k,cl_white,0)
-		rect(xx//2-160*screen_k,yy//2-140*screen_k,320*screen_k,280*screen_k,cl_black,2)
+	if help_i:
+		rect(xx//2-170*screen_k,yy//2-140*screen_k,340*screen_k,280*screen_k,cl_white,0)
+		rect(xx//2-170*screen_k,yy//2-140*screen_k,340*screen_k,280*screen_k,cl_black,2)
 		for i in range(len(help_text)):
-			textout(xx//2-160*screen_k+10,yy//2-135*screen_k+i*18*screen_k,int(12*screen_k),cl_black,help_text[i])
+			textout(xx//2-170*screen_k+10,yy//2-135*screen_k+i*18*screen_k,int(12*screen_k),cl_black,help_text[i])
 	
 
 	textout(xx-80*screen_k,yy-20*screen_k,int(12*screen_k),cl_black,'help - h')
@@ -902,7 +864,7 @@ while running:
 				k_r = True
 
 			if event.key == pygame.K_h:
-				k_h = True
+				help_i ^= 1
 
 			if event.key == pygame.K_1:
 				blocks_i = 0
@@ -943,9 +905,6 @@ while running:
 
 			if event.key == pygame.K_r:
 				k_r = False
-
-			if event.key == pygame.K_h:
-				k_h = False
 
 
 
