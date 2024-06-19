@@ -1,13 +1,11 @@
-ver = '1.0.01'
+ver = '1.0.2'
 import pygame
 import time
 import os
 import files_module as f_m
 import requests
 import threading
-import urllib.request
-
-
+import urllib
 
 def start_timer():
 	global start_time
@@ -90,6 +88,8 @@ time_ratio = round(physics_fps / current_fps,4)
 
 ver_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/version'
 code_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/logic.py'
+
+
 
 #состояния клавиш
 k_ctrl = False
@@ -273,6 +273,8 @@ class menu():
 		global mouse_touching_r
 		global menu_running
 		global linee
+		global names_online
+		global connection
 
 		mouse_x = xx/2 + 200
 		mouse_y = yy/2
@@ -280,15 +282,27 @@ class menu():
 		menu_running = True
 		
 
+		
+
+		if connection:
+			try:
+				os.remove('actual_ver.txt')
+			except:
+				1
+			download_git(ver_url,'actual_ver.txt')
+			actual_ver = open('actual_ver.txt','r').readlines()[0].replace('\n','')
+
+			get_names_thr = threading.Thread(target=online_maps.get_names)
+			get_names_thr.start()
+		else:
+			names_online = ['Offline mode']
+
+			
+
+
 		names = get_maps_names()
 
-		get_names_thr = threading.Thread(target=online_maps.get_names)
-		get_names_thr.start()
-
-		os.remove('actual_ver.txt')
-		download_git(ver_url,'actual_ver.txt')
-
-		actual_ver = open('actual_ver.txt','r').readlines()[0].replace('\n','')
+		
 
 		def menu_interface_and_events():
 
@@ -308,13 +322,15 @@ class menu():
 
 
 
-
 			textout(xx//4*3+10*screen_k,62*screen_k,int(20*screen_k),cl_black,'Local maps:')
 			textout(xx//4*3+10*screen_k,yy//2+35*screen_k,int(20*screen_k),cl_black,'Online maps:')
 			textout(xx//4*3+10*screen_k,yy//2+10*screen_k,int(10*screen_k),cl_black,'LMC-Choose map | RMC-Delete map')
 			menu_text = ['Start empty','Continue','Quit','','','','','','','','','']
-			if actual_ver != ver:
-				menu_text[11] = ('Update to '+actual_ver)
+			if connection:
+				if actual_ver != ver:
+					menu_text[11] = ('Update to '+actual_ver)
+			else:
+				menu_text[11] = ('Offline mode')
 			for i in range(len(menu_text)):
 				if mouse_x >= 10*screen_k and mouse_x < len(menu_text[i])*14*screen_k and mouse_y >= 62*screen_k+i*34*screen_k and mouse_y < 60*screen_k+i*34*screen_k+34*screen_k:
 					textout(10*screen_k,62*screen_k+i*34*screen_k,int(20*screen_k),cl_red,menu_text[i])
