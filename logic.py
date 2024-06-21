@@ -1,4 +1,4 @@
-ver = '1.0.4'
+ver = '1.0.5'
 import pygame
 import time
 import os
@@ -294,9 +294,10 @@ class menu():
 
 
 
-			textout(xx//4*3+10*screen_k,62*screen_k,int(20*screen_k),cl_black,'Local maps:')
-			textout(xx//4*3+10*screen_k,yy//2+35*screen_k,int(20*screen_k),cl_black,'Online maps:')
-			textout(xx//4*3+10*screen_k,yy//2+10*screen_k,int(10*screen_k),cl_black,'LMC-Choose map | RMC-Delete map')
+			textout(xx//2+10*screen_k,62*screen_k,int(20*screen_k),cl_black,'Local maps:')
+			textout(xx//4*3+10*screen_k,62*screen_k,int(20*screen_k),cl_black,'Online maps:')
+			textout(xx//2+10*screen_k,yy-14*screen_k,int(10*screen_k),cl_black,'LMC-Choose map | RMC-Delete map')
+			textout(xx//4*3+10*screen_k,yy-14*screen_k,int(10*screen_k),cl_black,'LMC-Choose map')
 			menu_text = ['Start empty','Continue','Quit','','','','','','','','','']
 			if connection:
 				if actual_ver != ver:
@@ -313,6 +314,7 @@ class menu():
 							for i in range(256):
 								field[i] = ['0']*256
 							menu_running = False
+							linee = ''
 						elif menu_text[i] == 'Continue':
 							menu_running = False
 						elif menu_text[i].split()[0] == 'Update':
@@ -328,33 +330,35 @@ class menu():
 				else:
 					textout(10*screen_k,62*screen_k+i*34*screen_k,int(20*screen_k),cl_black,menu_text[i])
 
+			line(xx//2,50*screen_k,xx//2,yy,cl_black,2)
 			line(xx//4*3,50*screen_k,xx//4*3,yy,cl_black,2)
-			line(xx//4*3,yy//2+25*screen_k,xx,yy//2+25*screen_k,cl_black,2)
 
 			for i in range(len(names)):
-				if mouse_x >= xx//4*3+10*screen_k and mouse_x < xx and mouse_y >= 102*screen_k+i*20*screen_k and mouse_y < 102*screen_k+i*20*screen_k+20*screen_k:
-					textout(xx//4*3+10*screen_k,102*screen_k+i*20*screen_k,int(12*screen_k),cl_red,names[i])
+				if mouse_x >= xx//2+10*screen_k and mouse_x < xx//4*3 and mouse_y >= 95*screen_k+i*20*screen_k and mouse_y < 95*screen_k+i*20*screen_k+20*screen_k:
+					textout(xx//2+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_red,names[i])
 					if mouse_touching_l:
-						rect(xx//4*3+10*screen_k,102*screen_k,xx//4,yy//3*2,cl_white,0)
-						textout(xx//4*3+10*screen_k,102*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Loading...')
+						rect(xx//2+10*screen_k,95*screen_k,xx//4-11*screen_k,yy//3*2,cl_white,0)
+						textout(xx//2+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Loading...')
 						pygame.display.flip()
 						clear_field()
 						field,field_l = f_m.load_map(names[i])
 						menu_running = False
 						linee = names[i]
 					if mouse_touching_r:
+						mouse_touching_r = False
 						f_m.delete_map(names[i])
 						names = get_maps_names()
+						break
 				else:
-					textout(xx//4*3+10*screen_k,102*screen_k+i*20*screen_k,int(12*screen_k),cl_black,names[i])
+					textout(xx//2+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_black,names[i])
 
 
 
 			for i in range(1):
-				if mouse_x >= xx//4*3+10*screen_k and mouse_x < xx and mouse_y >= yy//2+74*screen_k+i*20*screen_k and mouse_y < yy//2+74*screen_k+i*20*screen_k+20*screen_k:
-					textout(xx//4*3+10*screen_k,yy//2+74*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Not available yet!')
+				if mouse_x >= xx//4*3+10*screen_k and mouse_x < xx and mouse_y >= 95*screen_k+i*20*screen_k+i*20*screen_k and mouse_y < 95*screen_k+i*20*screen_k+i*20*screen_k+20*screen_k:
+					textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Not available yet!')
 				else:
-					textout(xx//4*3+10*screen_k,yy//2+74*screen_k+i*20*screen_k,int(12*screen_k),cl_black,'Coming soon...')
+					textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_black,'Coming soon...')
 
 
 		
@@ -486,6 +490,9 @@ def main_func():
 		if i == blocks_i:
 			rect(xx-78*screen_k,22*screen_k+55*screen_k*i,56*screen_k,56*screen_k,cl_black,2)
 
+	if connector_i == 0:
+		circle(xx-50*screen_k,215*screen_k,cl_black,8*screen_k)
+
 
 
 	if help_i:
@@ -498,6 +505,10 @@ def main_func():
 	textout(xx-80*screen_k,yy-20*screen_k,int(12*screen_k),cl_black,'help - h')
 
 	textout(xx-70*screen_k,6*screen_k,int(8*screen_k),cl_black,str(current_fps)+' fps')
+
+	rect(0,0,130*screen_k,14*screen_k,cl_white,0)
+	rect(0,0,130*screen_k,14*screen_k,cl_black,2)
+	textout(5*screen_k,0,int(10*screen_k),cl_black,linee)
 
 	if not(do_logic):
 		textout(xx//2-70*screen_k,yy-40*screen_k,int(22*screen_k),cl_black,'PAUSED')
@@ -721,6 +732,7 @@ def type_name():
 		rect(xx//4,yy//7*3,xx//2,yy//7,cl_white,0)
 		rect(xx//4,yy//7*3,xx//2,yy//7,cl_black,2)
 		textout(xx//4+10*screen_k,yy//7*3+18*screen_k,int(22*screen_k),cl_black,'Save as:   '+line)
+		textout(xx//4+25*screen_k,yy//7*3+45*screen_k,int(7*screen_k),cl_black,'Max - 16 symbols')
 
 		
 		for event in pygame.event.get():
@@ -728,12 +740,13 @@ def type_name():
 				1 / 0
 			if event.type == pygame.KEYDOWN:
 				for i in range(len(symbols)):
-					if event.key == symbols[i][0]:
-						if (caps ^ shift):
-							s = symbols[i][1]
-							line += s.upper()
-						else:
-							line += symbols[i][1]
+					if len(line) != 16:
+						if event.key == symbols[i][0]:
+							if (caps ^ shift):
+								s = symbols[i][1]
+								line += s.upper()
+							else:
+								line += symbols[i][1]
 
 				
 
@@ -854,12 +867,16 @@ while running:
 					direction = 'r'
 			if event.key == pygame.K_s:
 				if k_ctrl:
-					if k_alt:
+					if k_alt or linee == '':
 						linee = type_name()
+
 					if linee != -1:
+						textout(xx//2-70*screen_k,yy-40*screen_k,int(22*screen_k),cl_black,'SAVING...')
+						pygame.display.flip()
 						f_m.save_map(field,linee)
-					textout(xx//2-70*screen_k,yy-40*screen_k,int(22*screen_k),cl_black,'SAVING...')
-					pygame.display.flip()
+					else:
+						linee = ''
+					
 				else:
 					direction = 'd'
 
