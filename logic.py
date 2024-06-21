@@ -1,4 +1,4 @@
-ver = '1.0.3'
+ver = '1.0.4'
 import pygame
 import time
 import os
@@ -316,6 +316,9 @@ class menu():
 						elif menu_text[i] == 'Continue':
 							menu_running = False
 						elif menu_text[i].split()[0] == 'Update':
+							rect(10*screen_k,62*screen_k+i*34*screen_k,(xx//2),int(25*screen_k),cl_white,0)
+							textout(10*screen_k,62*screen_k+i*34*screen_k,int(20*screen_k),cl_red,'Updating...')
+							pygame.display.flip()
 							os.remove('logic.py')
 							download_git(code_url,'logic.py')
 							time.sleep(1)
