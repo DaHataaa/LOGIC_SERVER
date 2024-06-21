@@ -578,10 +578,15 @@ def logic():
 						if field_splited[4] == '1':
 							field_l_buf[int(field_splited[3])][int(field_splited[2])] += int(bool(value))
 						else:
-							field_l_buf[iy-1][ix] += int(bool(value))
-							field_l_buf[iy][ix+1] += int(bool(value))
-							field_l_buf[iy][ix-1] += int(bool(value))
-							field_l_buf[iy+1][ix] += int(bool(value))
+							if direction == 'u':
+								field_l_buf[iy-1][ix] += int(bool(value))
+							elif direction == 'r':
+								field_l_buf[iy][ix+1] += int(bool(value))
+							elif direction == 'l':
+								field_l_buf[iy][ix-1] += int(bool(value))
+							else:
+								field_l_buf[iy+1][ix] += int(bool(value))
+
 
 
 
