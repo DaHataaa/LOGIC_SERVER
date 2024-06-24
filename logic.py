@@ -1,4 +1,4 @@
-ver = '1.0.5'
+ver = '1.0.6'
 import pygame
 import time
 import os
@@ -456,6 +456,7 @@ def main_func():
 				elif k_r:
 					field[calc_iy][calc_ix] = '0'
 					field_l[calc_iy][calc_ix] = 0
+
 				if field[iy][ix] != '0':
 					fs = field[iy][ix].split('_')
 					block = blocks_png[blocks.index(fs[0])]['ft'.index(fs[1][0])]['urld'.index(fs[1][1])]
