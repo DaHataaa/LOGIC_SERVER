@@ -294,7 +294,7 @@ class menu():
 
 
 
-			textout(xx//2+10*screen_k,62*screen_k,int(20*screen_k),cl_black,'Local maps:')
+			textout(xx//2+10*screen_k,62*screen_k,int(20*screen_k),cl_black,'Zalupa maps:')
 			textout(xx//4*3+10*screen_k,62*screen_k,int(20*screen_k),cl_black,'Online maps:')
 			textout(xx//2+10*screen_k,yy-14*screen_k,int(10*screen_k),cl_black,'LMC-Choose map | RMC-Delete map')
 			textout(xx//4*3+10*screen_k,yy-14*screen_k,int(10*screen_k),cl_black,'LMC-Choose map')
