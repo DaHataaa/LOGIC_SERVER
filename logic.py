@@ -1,4 +1,4 @@
-ver = '1.0.5'
+ver = '1.1.0'
 import pygame
 import time
 import os
@@ -90,6 +90,7 @@ time_ratio = round(physics_fps / current_fps,4)
 
 ver_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/version'
 code_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/logic.py'
+online_maps_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/online%20maps/'
 
 
 
@@ -214,6 +215,16 @@ def get_maps_names():
 		names[i] = names[i].replace('\n','')
 	return names
 
+def get_online_maps_names():
+	download_git(online_maps_url+'online_maps_list.txt','data/online_maps/online_maps_list.txt')
+	
+	online_names = open('data/online_maps/online_maps_list.txt','r',encoding='utf8').readlines()
+	for i in range(len(online_names)):
+		online_names[i] = online_names[i].replace('\n','')
+	return online_names
+	
+
+
 
 
 def clear_field():
@@ -231,7 +242,6 @@ def clear_field():
 	field_l_buf = [0]*256
 	for i in range(256):
 		field_l_buf[i] = [0]*256
-
 
 
 
@@ -268,11 +278,13 @@ class menu():
 
 		if connection:
 			try:
-				os.remove('actual_ver.txt')
+				os.remove('data/actual_ver.txt')
+				os.remove('data/online_maps/online_maps_list.txt')
 			except:
 				1
-			download_git(ver_url,'actual_ver.txt')
-			actual_ver = open('actual_ver.txt','r').readlines()[0].replace('\n','')
+			names_online = get_online_maps_names()
+			download_git(ver_url,'data/actual_ver.txt')
+			actual_ver = open('data/actual_ver.txt','r').readlines()[0].replace('\n','')
 
 		names = get_maps_names()
 
@@ -354,11 +366,20 @@ class menu():
 
 
 
-			for i in range(1):
-				if mouse_x >= xx//4*3+10*screen_k and mouse_x < xx and mouse_y >= 95*screen_k+i*20*screen_k+i*20*screen_k and mouse_y < 95*screen_k+i*20*screen_k+i*20*screen_k+20*screen_k:
-					textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Not available yet!')
+			for i in range(len(names_online)):
+				if mouse_x >= xx//4*3+10*screen_k and mouse_x < xx and mouse_y >= 95*screen_k+i*20*screen_k and mouse_y < 95*screen_k+i*20*screen_k+20*screen_k:
+					textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_red,names_online[i])
+					if mouse_touching_l:
+						rect(xx//4*3+10*screen_k,95*screen_k,xx//4-11*screen_k,yy//3*2,cl_white,0)
+						textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Loading...')
+						pygame.display.flip()
+						clear_field()
+						download_git(online_maps_url+names_online[i].replace(' ','%20')+'.mp','data/online_maps/'+names_online[i]+'.mp')
+						field,field_l = f_m.load_online_map(names_online[i])
+						menu_running = False
+						linee = names_online[i]
 				else:
-					textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_black,'Coming soon...')
+					textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_black,names_online[i])
 
 
 		
