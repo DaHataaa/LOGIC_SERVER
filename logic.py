@@ -1,4 +1,4 @@
-ver = '1.1.0'
+ver = '1.0.0'
 import pygame
 import time
 import os
@@ -340,7 +340,7 @@ class menu():
 							os.remove('logic.py')
 							os.remove('files_module.py')
 							download_git(rep_url+'logic.py','logic.py')
-							download_git(rep_url_'files_module.py','files_module.py')
+							download_git(rep_url+'files_module.py','files_module.py')
 							time.sleep(1)
 							os.startfile('logic.py')
 							1/0
