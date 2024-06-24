@@ -89,7 +89,7 @@ time_ratio = round(physics_fps / current_fps,4)
 
 
 ver_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/version'
-code_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/logic.py'
+rep_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/'
 online_maps_url = 'https://raw.githubusercontent.com/DaHataaa/LOGIC_SERVER/main/online%20maps/'
 
 
@@ -216,6 +216,10 @@ def get_maps_names():
 	return names
 
 def get_online_maps_names():
+	try:
+		os.mkdir('data/online_maps')
+	except:
+		1
 	download_git(online_maps_url+'online_maps_list.txt','data/online_maps/online_maps_list.txt')
 	
 	online_names = open('data/online_maps/online_maps_list.txt','r',encoding='utf8').readlines()
@@ -334,7 +338,9 @@ class menu():
 							textout(10*screen_k,62*screen_k+i*34*screen_k,int(20*screen_k),cl_red,'Updating...')
 							pygame.display.flip()
 							os.remove('logic.py')
-							download_git(code_url,'logic.py')
+							os.remove('files_module.py')
+							download_git(rep_url+'logic.py','logic.py')
+							download_git(rep_url_'files_module','files_module.py')
 							time.sleep(1)
 							os.startfile('logic.py')
 							1/0
