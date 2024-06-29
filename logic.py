@@ -1,4 +1,4 @@
-ver = '1.1.1'
+ver = '1.1.2'
 import pygame
 import time
 import os
@@ -289,6 +289,9 @@ class menu():
 			names_online = get_online_maps_names()
 			download_git(ver_url,'data/actual_ver.txt')
 			actual_ver = open('data/actual_ver.txt','r').readlines()[0].replace('\n','')
+		else:
+			names_online = ['Offline mode']
+			actual_ver = 'Offline mode'
 
 		names = get_maps_names()
 
@@ -375,7 +378,7 @@ class menu():
 			for i in range(len(names_online)):
 				if mouse_x >= xx//4*3+10*screen_k and mouse_x < xx and mouse_y >= 95*screen_k+i*20*screen_k and mouse_y < 95*screen_k+i*20*screen_k+20*screen_k:
 					textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_red,names_online[i])
-					if mouse_touching_l:
+					if mouse_touching_l and connection:
 						rect(xx//4*3+10*screen_k,95*screen_k,xx//4-11*screen_k,yy//3*2,cl_white,0)
 						textout(xx//4*3+10*screen_k,95*screen_k+i*20*screen_k,int(12*screen_k),cl_red,'Loading...')
 						pygame.display.flip()
