@@ -1,4 +1,4 @@
-ver = '1.1.2'
+ver = '1.1.3'
 import pygame
 import time
 import os
@@ -903,8 +903,10 @@ while running:
 					direction = 'r'
 			if event.key == pygame.K_s:
 				if k_ctrl:
-					if k_alt or linee == '':
-						linee = type_name()
+					if k_shift or linee == '':
+						buf_l = type_name()
+						if buf_l != -1:
+							linee = buf_l
 
 					if linee != -1:
 						textout(xx//2-70*screen_k,yy-40*screen_k,int(22*screen_k),cl_black,'SAVING...')
