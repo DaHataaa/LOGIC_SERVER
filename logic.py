@@ -1,4 +1,4 @@
-ver = '1.1.3'
+ver = '1.1.4'
 import pygame
 import time
 import os
@@ -135,7 +135,7 @@ help_text = ['w,a,s,d - Block directions',
 			 'Ctrl+X - Cut selected area',
 			 'Ctrl+D - Clear clipboard (Deselect)',
 			 'Ctrl+S - Save current map',
-			 'Ctrl+Alt+S - Save as new map']
+			 'Ctrl+Shif+S - Save as new map']
 
 
 
