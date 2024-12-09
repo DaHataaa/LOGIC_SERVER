@@ -1,4 +1,4 @@
-ver = '1.1.4'
+ver = '1.1.5'
 import pygame
 import time
 import os
@@ -535,7 +535,7 @@ def main_func():
 
 	textout(xx-80*screen_k,yy-20*screen_k,int(12*screen_k),cl_black,'help - h')
 
-	textout(xx-70*screen_k,6*screen_k,int(8*screen_k),cl_black,str(current_fps)+' fps')
+	textout(xx-70*screen_k,6*screen_k,int(8*screen_k),cl_black,str(current_fps)+' tps')
 
 	rect(0,0,130*screen_k,14*screen_k,cl_white,0)
 	rect(0,0,130*screen_k,14*screen_k,cl_black,2)
