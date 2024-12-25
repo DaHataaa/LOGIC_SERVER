@@ -116,6 +116,8 @@ do_logic = 1
 
 linee = ''
 
+scr_names = []
+
 
 #переменные характеристики сетки и интерфейса
 corner_x = 0
@@ -129,30 +131,31 @@ help_text = ['w,a,s,d - Block directions',
 			 'Mouse Wheel - Scale',
 			 'R - Remove block',
 			 'Space - Play/Pause',
-			 'ESC - Menu',
+			 'T - Scripts menu',
 			 'E (hold) - Select and copy area to clipboard',
 			 'Ctrl+V - Paste area from clipboard',
 			 'Ctrl+X - Cut selected area',
 			 'Ctrl+D - Clear clipboard (Deselect)',
 			 'Ctrl+S - Save current map',
-			 'Ctrl+Shif+S - Save as new map']
+			 'Ctrl+Shif+S - Save as new map',
+			 'ESC - Menu']
 
 
 
 #переменные для редактора
 direction = 'u'
-blocks = ['arrow','getter','bridge','connector','power','not','and','xor']
-blocks_i = 0
+blocks = ['','arrow','getter','bridge','connector','power','not','and','xor']
+blocks_i = 1
 
 connector_i = 0
 conn_x1 = 0
 conn_y1 = 0
 
-blocks_png = [0]*8
-for i in range(8):
+blocks_png = [0]*9
+for i in range(9):
 	blocks_png[i] = [['','','',''],['','','','']]
 
-for i_b in range(8):
+for i_b in range(1,9):
 	for i_s in range(2):
 		for i_d in range(4):
 			blocks_png[i_b][i_s][i_d] = pygame.image.load('data/gfx/'+blocks[i_b]+'/'+blocks[i_b]+'_'+'ft'[i_s]+'urld'[i_d]+'.png')
@@ -211,6 +214,12 @@ def textout(x,y,size,color,text):
 
 def get_maps_names():
 	names = open('data/maps/maps_list.txt','r',encoding='utf8').readlines()
+	for i in range(len(names)):
+		names[i] = names[i].replace('\n','')
+	return names
+
+def get_scripts_names():
+	names = open('data/scripts/scripts_list.txt','r',encoding='utf8').readlines()
 	for i in range(len(names)):
 		names[i] = names[i].replace('\n','')
 	return names
@@ -437,6 +446,31 @@ class menu():
 				pygame.display.flip()
 
 
+def place(block_i, calc_ix ,calc_iy, direction):
+	global field
+	global connector_i
+	global conn_x1
+	global conn_y1
+	global mouse_touching_l
+
+	block = blocks[block_i]
+
+	if blocks[block_i] == 'connector':
+
+		if connector_i == 0:
+			conn_x1 = calc_ix
+			conn_y1 = calc_iy
+			field[calc_iy][calc_ix] = block+'_f'+direction
+		else:
+			field[calc_iy][calc_ix] = block+'_f'+direction+'_'+str(conn_x1)+'_'+str(conn_y1)+'_'+'2'
+			field[conn_y1][conn_x1] = block+'_f'+direction+'_'+str(calc_ix)+'_'+str(calc_iy)+'_'+'1'
+		connector_i ^= 1
+
+		mouse_touching_l = False
+	else:
+		field[calc_iy][calc_ix] = block+'_f'+direction
+
+
 
 
 def main_func():
@@ -464,37 +498,45 @@ def main_func():
 	for ix in range(256):
 		for iy in range(256):
 			if -sq_size < grid_x+ix*sq_size < xx-100 and -sq_size < grid_y+iy*sq_size < yy:
+				fs = field[iy][ix].split('_')
+				
+
 				calc_iy = (mouse_y-grid_y)//sq_size
 				calc_ix = (mouse_x-grid_x)//sq_size
 				if mouse_touching_l:
 					if mouse_x < xx-100*screen_k and calc_ix < 255 and calc_iy < 255 and calc_ix >= 0 and calc_iy >= 0:
-						if field[calc_iy][calc_ix].split('_')[0] == 'connector':
-							if connector_i == 0:
-								conn_x1 = calc_ix
-								conn_y1 = calc_iy
-								field[calc_iy][calc_ix] = blocks[blocks_i]+'_f'+direction
-							else:
-								field[calc_iy][calc_ix] = blocks[blocks_i]+'_f'+direction+'_'+str(conn_x1)+'_'+str(conn_y1)+'_'+'2'
-								field[conn_y1][conn_x1] = blocks[blocks_i]+'_f'+direction+'_'+str(calc_ix)+'_'+str(calc_iy)+'_'+'1'
-							connector_i ^= 1
-							mouse_touching_l = False
-
-						else:
-							field[calc_iy][calc_ix] = blocks[blocks_i]+'_f'+direction
+						place(blocks_i, calc_ix, calc_iy, direction)
 					if mouse_x > xx-78*screen_k:
-						blocks_i = int((mouse_y-22*screen_k)//(55*screen_k))
+						blocks_i = int((mouse_y-22*screen_k)//(55*screen_k))+1
 				elif k_r:
 					field[calc_iy][calc_ix] = '0'
 					field_l[calc_iy][calc_ix] = 0
 
 				if field[iy][ix] != '0':
-					fs = field[iy][ix].split('_')
 					block = blocks_png[blocks.index(fs[0])]['ft'.index(fs[1][0])]['urld'.index(fs[1][1])]
 					block = pygame.transform.scale(block,(sq_size,sq_size))
 
 					screen.blit(block,(grid_x+ix*sq_size,grid_y+iy*sq_size))
 					if fs[0] == 'connector' and len(fs) == 5 and fs[4]=='1':
 						circle(grid_x+ix*sq_size+sq_size/2,grid_y+iy*sq_size+sq_size/2,cl_black,sq_size//6)
+				if fs[0] == 'connector' and k_alt:
+					fs2 = field[int(fs[3])][int(fs[2])].split('_')
+					d = sq_size//2
+
+					rx = int(fs[2])*sq_size+grid_x + d
+					ry = int(fs[3])*sq_size+grid_y + d
+
+					rx2 = int(fs2[2])*sq_size+grid_x + d
+					ry2 = int(fs2[3])*sq_size+grid_y + d
+
+					if (pow(((rx-mouse_x)**2 + (ry-mouse_y)**2),0.5) < 50 or 
+						pow(((rx2-mouse_x)**2 + (ry2-mouse_y)**2),0.5) < 50):
+						
+
+						line(rx,ry,rx2,ry2,cl_red,2)
+						rect(rx-d,ry-d,sq_size,sq_size,cl_red,3)
+						rect(rx2-d,ry2-d,sq_size,sq_size,cl_red,3)
+
 
 	
 	for i in range(256):
@@ -512,14 +554,14 @@ def main_func():
 
 
 
-	for i in range(8):
+	for i in range(1,9):
 		fs = field[iy][ix].split('_')
 		block = blocks_png[i][0]['urld'.index(direction)]
 		block = pygame.transform.scale(block,(50*screen_k,50*screen_k))
-		screen.blit(block,(xx-75*screen_k,25*screen_k+55*screen_k*i))
-		textout(xx-90*screen_k,28*screen_k+55*screen_k*i,11,cl_black,str(i+1))
+		screen.blit(block,(xx-75*screen_k,25*screen_k+55*screen_k*(i-1)))
+		textout(xx-90*screen_k,28*screen_k+55*screen_k*(i-1),11,cl_black,str(i))
 		if i == blocks_i:
-			rect(xx-78*screen_k,22*screen_k+55*screen_k*i,56*screen_k,56*screen_k,cl_black,2)
+			rect(xx-78*screen_k,22*screen_k+55*screen_k*(i-1),56*screen_k,56*screen_k,cl_black,2)
 
 	if connector_i == 0:
 		circle(xx-50*screen_k,215*screen_k,cl_black,8*screen_k)
@@ -817,7 +859,45 @@ def type_name():
 
 
 
+def run_script(script_name):
+	global field
+	global connector_i
+	global conn_x1
+	global conn_y1
+	global mouse_touching_l
+
+
+
+
+	grid_x = corner_x
+	grid_y = corner_y
+	y0 = (mouse_y-grid_y)//sq_size
+	x0 = (mouse_x-grid_x)//sq_size
+
+	
+
+
+	if not(script_name in scr_names):
+		return 0
+
+	script = open('data/scripts/'+script_name,'r').read()
+	
+	exec('\n'+script)
+
+
+	
+
+
+
+
+
+
+
 clear_field()
+
+scr_names = get_scripts_names()
+
+
 
 mouse_x = xx/2 + 200
 mouse_y = yy/2
@@ -883,6 +963,8 @@ while running:
 				k_x = True
 			if event.key == pygame.K_d:
 				k_d = True
+			if event.key == pygame.K_t:
+				k_d = True
 			if event.key == pygame.K_l:
 				if k_ctrl:
 					if k_alt:
@@ -890,6 +972,11 @@ while running:
 						
 					else:
 						1
+			if event.key == pygame.K_t:
+				run_script('tst.ls')
+				
+
+
 			if event.key == pygame.K_BACKSPACE:
 				1
 			if event.key == pygame.K_ESCAPE:
@@ -925,21 +1012,21 @@ while running:
 				help_i ^= 1
 
 			if event.key == pygame.K_1:
-				blocks_i = 0
-			if event.key == pygame.K_2:
 				blocks_i = 1
-			if event.key == pygame.K_3:
+			if event.key == pygame.K_2:
 				blocks_i = 2
-			if event.key == pygame.K_4:
+			if event.key == pygame.K_3:
 				blocks_i = 3
-			if event.key == pygame.K_5:
+			if event.key == pygame.K_4:
 				blocks_i = 4
-			if event.key == pygame.K_6:
+			if event.key == pygame.K_5:
 				blocks_i = 5
-			if event.key == pygame.K_7:
+			if event.key == pygame.K_6:
 				blocks_i = 6
-			if event.key == pygame.K_8:
+			if event.key == pygame.K_7:
 				blocks_i = 7
+			if event.key == pygame.K_8:
+				blocks_i = 8
 
 
 		if event.type == pygame.KEYUP:
